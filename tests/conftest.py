@@ -62,5 +62,6 @@ def lin_out_interface(request):
 def custom_database_path():
     tests_path = os.path.dirname(__file__)
     root_path = os.path.dirname(tests_path)
-    database_path = os.path.join(root_path, 'nixnet_examples', 'databases', 'custom_database.dbc')
-    return database_path
+    return os.path.join(
+        root_path, 'nixnet_examples', 'databases', 'custom_database.dbc'
+    )

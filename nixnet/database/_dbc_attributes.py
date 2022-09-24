@@ -23,13 +23,10 @@ class DbcAttributeCollection(Mapping):
         # Here, we are caching the attribute names and enums to work around a driver issue.
         # The issue results in an empty attribute value after intermixing calls to get attribute values and enums.
         # We can avoid this issue if we get all attribute enums first, before getting any attribute values.
-        self._cache = dict(
-            (name, self._get_enums(name))
-            for name in self._get_names()
-        )
+        self._cache = {name: self._get_enums(name) for name in self._get_names()}
 
     def __repr__(self):
-        return '{}(handle={})'.format(type(self).__name__, self._handle)
+        return f'{type(self).__name__}(handle={self._handle})'
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
@@ -39,10 +36,7 @@ class DbcAttributeCollection(Mapping):
 
     def __ne__(self, other):
         result = self.__eq__(other)
-        if result is NotImplemented:
-            return result
-        else:
-            return not result
+        return result if result is NotImplemented else not result
 
     def __hash__(self):
         return hash(self._handle)
@@ -73,8 +67,7 @@ class DbcAttributeCollection(Mapping):
             Yields:
                 An iterator to all attribute names in the collection.
         """
-        for name in self._cache:
-            yield name
+        yield from self._cache
 
     def values(self):
         """Return all attribute values in the collection.
@@ -100,12 +93,7 @@ class DbcAttributeCollection(Mapping):
         attribute_size = _funcs.nxdb_get_dbc_attribute_size(self._handle, mode, '')
         attribute_info = _funcs.nxdb_get_dbc_attribute(self._handle, mode, '', attribute_size)
         name_string = attribute_info[0]
-        name_list = [
-            name
-            for name in name_string.split(',')
-            if name.strip()
-        ]
-        return name_list
+        return [name for name in name_string.split(',') if name.strip()]
 
     def _get_enums(self, name):
         # type: (typing.Text) -> typing.List[typing.Text]
@@ -113,17 +101,12 @@ class DbcAttributeCollection(Mapping):
         attribute_size = _funcs.nxdb_get_dbc_attribute_size(self._handle, mode, name)
         attribute_info = _funcs.nxdb_get_dbc_attribute(self._handle, mode, name, attribute_size)
         enum_string = attribute_info[0]
-        enum_list = [
-            enum
-            for enum in enum_string.split(',')
-            if enum.strip()
-        ]
-        return enum_list
+        return [enum for enum in enum_string.split(',') if enum.strip()]
 
     def _get_value(self, name):
         # type: (typing.Text) -> typing.Tuple[typing.Text, bool]
         if name not in self._cache:
-            raise KeyError('Attribute name %s not found in DBC attributes' % name)
+            raise KeyError(f'Attribute name {name} not found in DBC attributes')
 
         mode = constants.GetDbcAttributeMode.ATTRIBUTE
         attribute_size = _funcs.nxdb_get_dbc_attribute_size(self._handle, mode, name)

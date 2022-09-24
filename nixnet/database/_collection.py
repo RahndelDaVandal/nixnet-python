@@ -28,7 +28,7 @@ class DbCollection(Mapping):
         self._factory = factory
 
     def __repr__(self):
-        return '{}(handle={}, db_type={})'.format(type(self).__name__, self._handle, self._type)
+        return f'{type(self).__name__}(handle={self._handle}, db_type={self._type})'
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
@@ -39,10 +39,7 @@ class DbCollection(Mapping):
 
     def __ne__(self, other):
         result = self.__eq__(other)
-        if result is NotImplemented:
-            return result
-        else:
-            return not result
+        return result if result is NotImplemented else not result
 
     def __hash__(self):
         return hash(self._handle)
@@ -61,11 +58,10 @@ class DbCollection(Mapping):
         Returns:
             index(str): Name of database object.
         """
-        if isinstance(index, six.string_types):
-            ref = _funcs.nxdb_find_object(self._handle, self._type, index)
-            return self._factory(_handle=ref)
-        else:
+        if not isinstance(index, six.string_types):
             raise TypeError(index)
+        ref = _funcs.nxdb_find_object(self._handle, self._type, index)
+        return self._factory(_handle=ref)
 
     def __delitem__(self, index):
         ref = _funcs.nxdb_find_object(self._handle, self._type, index)

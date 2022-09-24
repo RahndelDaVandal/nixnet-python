@@ -30,7 +30,7 @@ def test_database_lin_sched_entry_properties():
         entry = db.find(database.LinSchedEntry, 'se1')  # type: database.LinSchedEntry
 
         # test references
-        assert len(list(entry.frames)) > 0
+        assert list(entry.frames)
         print(entry.sched)
         with pytest.raises(errors.XnetError):
             print(entry.collision_res_sched)

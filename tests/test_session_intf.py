@@ -17,17 +17,17 @@ def test_intf_container(can_in_interface):
     frame_name = 'CANEventFrame1'
 
     with nixnet.FrameInQueuedSession(
-            can_in_interface,
-            database_name,
-            cluster_name,
-            frame_name) as input_session:
+                can_in_interface,
+                database_name,
+                cluster_name,
+                frame_name) as input_session:
         assert input_session.intf == input_session.intf
         assert input_session.intf == can_in_interface
-        assert not (input_session.intf == "<random>")
-        assert not (input_session.intf == 5)
+        assert input_session.intf != "<random>"
+        assert input_session.intf != 5
 
-        assert not (input_session.intf != input_session.intf)
-        assert not (input_session.intf != can_in_interface)
+        assert input_session.intf == input_session.intf
+        assert input_session.intf == can_in_interface
         assert input_session.intf != "<random>"
         assert input_session.intf != 5
 

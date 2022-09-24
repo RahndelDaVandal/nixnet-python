@@ -26,7 +26,7 @@ def main():
                 input_session.intf.lin_term = constants.LinTerm.ON
                 output_session.intf.lin_term = constants.LinTerm.ON
             else:
-                print("Unrecognised input ({}), assuming 'n'".format(terminated_cable))
+                print(f"Unrecognised input ({terminated_cable}), assuming 'n'")
                 input_session.intf.lin_term = constants.LinTerm.ON
                 output_session.intf.lin_term = constants.LinTerm.ON
 
@@ -44,7 +44,10 @@ def main():
                 payload_list = [int(x.strip()) for x in user_value.split(",")]
             except ValueError:
                 payload_list = [2, 4, 8, 16]
-                print('Unrecognized input ({}). Setting data buffer to {}'.format(user_value, payload_list))
+                print(
+                    f'Unrecognized input ({user_value}). Setting data buffer to {payload_list}'
+                )
+
 
             id = 0
             payload = bytearray(payload_list)
@@ -58,8 +61,7 @@ def main():
 
                 frame.payload = payload
                 output_session.frames.write([frame])
-                print('Sent frame with ID: {} payload: {}'.format(frame.identifier,
-                                                                  list(frame.payload)))
+                print(f'Sent frame with ID: {frame.identifier} payload: {list(frame.payload)}')
 
                 # Wait 1 s and then read the received values.
                 # They should be the same as the ones sent.
@@ -68,8 +70,10 @@ def main():
                 count = 1
                 frames = input_session.frames.read(count)
                 for frame in frames:
-                    print('Received frame with ID: {} payload: {}'.format(frame.identifier,
-                                                                          list(six.iterbytes(frame.payload))))
+                    print(
+                        f'Received frame with ID: {frame.identifier} payload: {list(six.iterbytes(frame.payload))}'
+                    )
+
 
                 i += 1
                 if max(payload) + i > 0xFF:

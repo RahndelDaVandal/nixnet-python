@@ -37,10 +37,10 @@ def test_database_pdu_properties():
 
         # test references
         print(pdu.cluster)
-        assert len(list(pdu.frms)) > 0
+        assert list(pdu.frms)
         assert len(pdu.signals) > 0
-        assert len(list(pdu.mux_static_sigs)) > 0
-        assert len(list(pdu.mux_subframes)) == 0
+        assert list(pdu.mux_static_sigs)
+        assert not list(pdu.mux_subframes)
         with pytest.raises(errors.XnetError):
             print(pdu.mux_data_mux_sig)
 

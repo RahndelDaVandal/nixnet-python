@@ -36,8 +36,8 @@ def test_database_ecu_properties():
         ecu = db.find(database.Ecu, 'Master1')  # type: database.Ecu
 
         # test references
-        assert len(list(ecu.rx_frms)) > 0
-        assert len(list(ecu.tx_frms)) > 0
+        assert list(ecu.rx_frms)
+        assert list(ecu.tx_frms)
 
         # test setters
         ecu.comment = 'This is a comment.'

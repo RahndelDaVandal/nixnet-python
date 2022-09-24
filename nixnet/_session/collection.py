@@ -24,7 +24,7 @@ class Collection(Sequence):
         self.__list_cache = None  # type: typing.List[typing.Text]
 
     def __repr__(self):
-        return '{}(handle={})'.format(type(self).__name__, self._handle)
+        return f'{type(self).__name__}(handle={self._handle})'
 
     def __len__(self):
         # type: () -> int
@@ -33,14 +33,16 @@ class Collection(Sequence):
     def __iter__(self):
         item_count = len(self)
         item_names = self._list_cache
-        assert item_count == len(item_names), \
-            "Frame count ({}) is out of sync with items ({})".format(item_count, item_names)
+        assert item_count == len(
+            item_names
+        ), f"Frame count ({item_count}) is out of sync with items ({item_names})"
+
         for index, name in enumerate(item_names):
             yield self._create_item(self._handle, index, name)
 
     def __contains__(self, index):
         if isinstance(index, six.integer_types):
-            return 0 <= index and index < len(self._list_cache)
+            return 0 <= index < len(self._list_cache)
         elif isinstance(index, six.string_types):
             name = index
             return name in self._list_cache
@@ -98,10 +100,7 @@ class Collection(Sequence):
 
     def __ne__(self, other):
         result = self.__eq__(other)
-        if result is NotImplemented:
-            return result
-        else:
-            return not result
+        return result if result is NotImplemented else not result
 
     @property
     def _list_cache(self):
@@ -126,7 +125,7 @@ class Item(object):
         self._name = name
 
     def __repr__(self):
-        return '{}(handle={})'.format(type(self).__name__, self._handle)
+        return f'{type(self).__name__}(handle={self._handle})'
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
@@ -139,10 +138,7 @@ class Item(object):
 
     def __ne__(self, other):
         result = self.__eq__(other)
-        if result is NotImplemented:
-            return result
-        else:
-            return not result
+        return result if result is NotImplemented else not result
 
     def __int__(self):
         # type: () -> int

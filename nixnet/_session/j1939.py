@@ -13,7 +13,7 @@ class J1939(object):
         self._handle = handle
 
     def __repr__(self):
-        return '{}(handle={})'.format(type(self).__name__, self._handle)
+        return f'{type(self).__name__}(handle={self._handle})'
 
     def __str__(self):
         return self.name

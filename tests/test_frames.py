@@ -67,12 +67,12 @@ def test_iterate_frames_corrupted_frame():
 def test_can_identifier_equality():
     assert types.CanIdentifier(130) == types.CanIdentifier(130)
     assert types.CanIdentifier(130, True) == types.CanIdentifier(130, True)
-    assert not (types.CanIdentifier(130) == types.CanIdentifier(13))
-    assert not (types.CanIdentifier(130) == types.CanIdentifier(130, True))
-    assert not (types.CanIdentifier(130) == "<invalid>")
+    assert types.CanIdentifier(130) != types.CanIdentifier(13)
+    assert types.CanIdentifier(130) != types.CanIdentifier(130, True)
+    assert types.CanIdentifier(130) != "<invalid>"
 
-    assert not (types.CanIdentifier(130) != types.CanIdentifier(130))
-    assert not (types.CanIdentifier(130, True) != types.CanIdentifier(130, True))
+    assert types.CanIdentifier(130) == types.CanIdentifier(130)
+    assert types.CanIdentifier(130, True) == types.CanIdentifier(130, True)
     assert types.CanIdentifier(130) != types.CanIdentifier(13)
     assert types.CanIdentifier(130) != types.CanIdentifier(130, True)
     assert types.CanIdentifier(130) != "<invalid>"
@@ -97,10 +97,10 @@ def test_raw_frame_equality():
     base_frame = types.RawFrame(1, 2, constants.FrameType.CAN_DATA, 4, 5, b'\x01')
 
     assert empty_frame == empty_frame
-    assert not (empty_frame == base_frame)
-    assert not (empty_frame == 5)
+    assert empty_frame != base_frame
+    assert empty_frame != 5
 
-    assert not (empty_frame != empty_frame)
+    assert empty_frame == empty_frame
     assert empty_frame != base_frame
     assert empty_frame != 5
 
@@ -118,10 +118,10 @@ def test_can_frame_equality():
     base_frame = types.CanFrame(0, constants.FrameType.CAN_DATA, b'\x01')
 
     assert empty_frame == empty_frame
-    assert not (empty_frame == base_frame)
-    assert not (empty_frame == 5)
+    assert empty_frame != base_frame
+    assert empty_frame != 5
 
-    assert not (empty_frame != empty_frame)
+    assert empty_frame == empty_frame
     assert empty_frame != base_frame
     assert empty_frame != 5
 
@@ -131,10 +131,10 @@ def test_can_bus_error_frame_equality():
     other_frame = types.CanBusErrorFrame(100, constants.CanCommState.BUS_OFF, True, constants.CanLastErr.STUFF, 1, 3)
 
     assert frame == frame
-    assert not (frame == other_frame)
-    assert not (frame == 5)
+    assert frame != other_frame
+    assert frame != 5
 
-    assert not (frame != frame)
+    assert frame == frame
     assert frame != other_frame
     assert frame != 5
 
@@ -144,10 +144,10 @@ def test_lin_frame_equality():
     base_frame = types.LinFrame(2, constants.FrameType.LIN_DATA, b'\x01')
 
     assert empty_frame == empty_frame
-    assert not (empty_frame == base_frame)
-    assert not (empty_frame == 5)
+    assert empty_frame != base_frame
+    assert empty_frame != 5
 
-    assert not (empty_frame != empty_frame)
+    assert empty_frame == empty_frame
     assert empty_frame != base_frame
     assert empty_frame != 5
 
@@ -163,10 +163,10 @@ def test_lin_bus_error_frame_equality():
     other_frame = types.LinBusErrorFrame(100, constants.LinCommState.IDLE, constants.LinLastErr.UNKNOWN_ID, 1, 3, 3)
 
     assert frame == frame
-    assert not (frame == other_frame)
-    assert not (frame == 5)
+    assert frame != other_frame
+    assert frame != 5
 
-    assert not (frame != frame)
+    assert frame == frame
     assert frame != other_frame
     assert frame != 5
 
@@ -176,10 +176,10 @@ def test_delay_frame_equality():
     other_frame = types.DelayFrame(120)
 
     assert frame == frame
-    assert not (frame == other_frame)
-    assert not (frame == 5)
+    assert frame != other_frame
+    assert frame != 5
 
-    assert not (frame != frame)
+    assert frame == frame
     assert frame != other_frame
     assert frame != 5
 
@@ -189,10 +189,10 @@ def test_log_trigger_frame_equality():
     other_frame = types.LogTriggerFrame(120)
 
     assert frame == frame
-    assert not (frame == other_frame)
-    assert not (frame == 5)
+    assert frame != other_frame
+    assert frame != 5
 
-    assert not (frame != frame)
+    assert frame == frame
     assert frame != other_frame
     assert frame != 5
 
@@ -202,10 +202,10 @@ def test_start_trigger_frame_equality():
     other_frame = types.StartTriggerFrame(120)
 
     assert frame == frame
-    assert not (frame == other_frame)
-    assert not (frame == 5)
+    assert frame != other_frame
+    assert frame != 5
 
-    assert not (frame != frame)
+    assert frame == frame
     assert frame != other_frame
     assert frame != 5
 
@@ -213,7 +213,11 @@ def test_start_trigger_frame_equality():
 def test_serialize_frame_with_empty_payload():
     empty_frame = types.RawFrame(1, 2, constants.FrameType.CAN_DATA, 4, 5, b'')
     (base, ) = list(_frames.serialize_frame(empty_frame))
-    assert base[0:16] == b'\x01\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x04\x05\x00'
+    assert (
+        base[:16]
+        == b'\x01\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x04\x05\x00'
+    )
+
     assert base[16:] == b'\x00\x00\x00\x00\x00\x00\x00\x00'
 
 
@@ -221,7 +225,11 @@ def test_serialize_frame_with_base_payload():
     payload = b'\x01\x02\x03\x04\x05\x06\x07\x08'
     base_frame = types.RawFrame(1, 2, constants.FrameType.CAN_DATA, 4, 5, payload)
     (base, ) = list(_frames.serialize_frame(base_frame))
-    assert base[0:16] == b'\x01\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x04\x05\x08'
+    assert (
+        base[:16]
+        == b'\x01\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x04\x05\x08'
+    )
+
     assert base[16:] == b'\x01\x02\x03\x04\x05\x06\x07\x08'
 
 
@@ -229,7 +237,11 @@ def test_serialize_frame_with_payload_unit():
     payload = b'\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B'
     base_frame = types.RawFrame(1, 2, constants.FrameType.CAN_DATA, 4, 5, payload)
     (base, payload) = list(_frames.serialize_frame(base_frame))
-    assert base[0:16] == b'\x01\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x04\x05\x0b'
+    assert (
+        base[:16]
+        == b'\x01\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x04\x05\x0b'
+    )
+
     assert base[16:] == b'\x01\x02\x03\x04\x05\x06\x07\x08'
     assert payload == b'\x09\x0A\x0B\x00\x00\x00\x00\x00'
 
@@ -356,14 +368,14 @@ def test_session_frames_container(can_in_interface):
     frame_name = 'CANEventFrame1'
 
     with nixnet.FrameInQueuedSession(
-            can_in_interface,
-            database_name,
-            cluster_name,
-            frame_name) as input_session:
+                can_in_interface,
+                database_name,
+                cluster_name,
+                frame_name) as input_session:
         assert input_session.frames == input_session.frames
-        assert not (input_session.frames == 5)
+        assert input_session.frames != 5
 
-        assert not (input_session.frames != input_session.frames)
+        assert input_session.frames == input_session.frames
         assert input_session.frames != 5
 
         print(repr(input_session.frames))
@@ -425,18 +437,18 @@ def test_session_frame_container(can_in_interface):
     frame_name = 'CANEventFrame1'
 
     with nixnet.FrameInQueuedSession(
-            can_in_interface,
-            database_name,
-            cluster_name,
-            frame_name) as input_session:
+                can_in_interface,
+                database_name,
+                cluster_name,
+                frame_name) as input_session:
         frames = input_session.frames
         assert len(frames) == 1, "Pre-requisite failed"
         frame = frames[0]
 
         assert frame == frame
-        assert not (frame == 5)
+        assert frame != 5
 
-        assert not (frame != frame)
+        assert frame == frame
         assert frame != 5
 
         print(repr(frame))

@@ -19,7 +19,7 @@ class Interface(object):
         self._handle = handle
 
     def __repr__(self):
-        return '{}(handle={})'.format(type(self).__name__, self._handle)
+        return f'{type(self).__name__}(handle={self._handle})'
 
     def __str__(self):
         return self._name
@@ -34,10 +34,7 @@ class Interface(object):
 
     def __ne__(self, other):
         result = self.__eq__(other)
-        if result is NotImplemented:
-            return result
-        else:
-            return not result
+        return result if result is NotImplemented else not result
 
     @property
     def baud_rate(self):
@@ -170,8 +167,7 @@ class Interface(object):
 
         See also :any:`Interface.out_strm_list`.
         '''
-        for id in _props.get_session_intf_can_out_strm_list_by_id(self._handle):
-            yield id
+        yield from _props.get_session_intf_can_out_strm_list_by_id(self._handle)
 
     @out_strm_list_by_id.setter
     def out_strm_list_by_id(self, value):

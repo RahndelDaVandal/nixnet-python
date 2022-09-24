@@ -63,10 +63,7 @@ def _calculate_payload_size(payload_length):
     >>> _calculate_payload_size(16)
     16
     """
-    if 8 < payload_length:
-        return (payload_length + 7) & 0x07F8
-    else:
-        return 8
+    return (payload_length + 7) & 0x07F8 if payload_length > 8 else 8
 
 
 def _calculate_payload_unit_size(payload_length):
@@ -124,7 +121,7 @@ def iterate_frames(bytes):
         payload_pad_pos = payload_pos + payload_unit_length
         next_pos += _calculate_payload_unit_size(payload_length)
 
-        base_unit_payload = base_unit[FRAME_PAYLOAD_INDEX][0:base_unit_length]
+        base_unit_payload = base_unit[FRAME_PAYLOAD_INDEX][:base_unit_length]
         payload_unit = bytes[payload_pos:payload_pad_pos]
         payload = base_unit_payload + payload_unit
         yield types.RawFrame(
@@ -139,7 +136,7 @@ def iterate_frames(bytes):
 def serialize_frame(frame):
     """Yields units that compose the frame."""
     payload = bytes(frame.payload)
-    base_unit_payload = payload[0:MAX_BASE_UNIT_PAYLOAD_LENGTH]
+    base_unit_payload = payload[:MAX_BASE_UNIT_PAYLOAD_LENGTH]
     base_unit_padding_length = max(MAX_BASE_UNIT_PAYLOAD_LENGTH - len(base_unit_payload), 0)
     base_unit_payload += b'\0' * base_unit_padding_length
 
@@ -162,15 +159,15 @@ def serialize_frame(frame):
             _errors.check_for_error(_cconsts.NX_ERR_NON_J1939_FRAME_SIZE)
         info = frame.info
 
-    base_unit = nxFrameFixed_t.pack(
+    yield nxFrameFixed_t.pack(
         frame.timestamp,
         frame.identifier,
         frame.type.value,
         frame.flags,
         info,
         payload_length,
-        base_unit_payload)
-    yield base_unit
+        base_unit_payload,
+    )
 
     if payload_unit:
         yield payload_unit

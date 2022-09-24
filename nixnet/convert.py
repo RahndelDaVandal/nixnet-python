@@ -99,17 +99,14 @@ class SignalConversionSinglePointSession(object):
 
     def __ne__(self, other):
         result = self.__eq__(other)
-        if result is NotImplemented:
-            return result
-        else:
-            return not result
+        return result if result is NotImplemented else not result
 
     def __hash__(self):
         return hash(self._handle)
 
     def __repr__(self):
         # type: () -> typing.Text
-        return '{}(handle={})'.format(type(self).__name__, self._handle)
+        return f'{type(self).__name__}(handle={self._handle})'
 
     def close(self):
         # type: () -> None
@@ -210,7 +207,7 @@ class SignalConversionSinglePointSession(object):
             self._handle,
             list(signals),
             num_bytes)
-        return buffer[0:number_of_bytes_returned]
+        return buffer[:number_of_bytes_returned]
 
     def convert_signals_to_frames(self, signals, frame_type=types.XnetFrame):
         # type: (typing.Iterable[float], typing.Type[types.FrameFactory]) -> typing.Iterable[types.Frame]

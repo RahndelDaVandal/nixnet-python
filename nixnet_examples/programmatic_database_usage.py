@@ -25,17 +25,17 @@ def main():
     interface = 'CAN1'
 
     with nixnet.FrameOutQueuedSession(
-            interface,
-            database_name,
-            cluster_name,
-            output_frame) as output_session:
+                interface,
+                database_name,
+                cluster_name,
+                output_frame) as output_session:
         terminated_cable = six.moves.input('Are you using a terminated cable (Y or N)? ')
         if terminated_cable.lower() == "y":
             output_session.intf.can_term = constants.CanTerm.OFF
         elif terminated_cable.lower() == "n":
             output_session.intf.can_term = constants.CanTerm.ON
         else:
-            print("Unrecognised input ({}), assuming 'n'".format(terminated_cable))
+            print(f"Unrecognised input ({terminated_cable}), assuming 'n'")
             output_session.intf.can_term = constants.CanTerm.ON
 
         user_value = six.moves.input('Enter payload [int, int]: ')
@@ -43,24 +43,24 @@ def main():
             payload_list = [int(x.strip()) for x in user_value.split(",")]
         except ValueError:
             payload_list = [2, 4, 8, 16]
-            print('Unrecognized input ({}). Setting data buffer to {}'.format(user_value, payload_list))
+            print(
+                f'Unrecognized input ({user_value}). Setting data buffer to {payload_list}'
+            )
+
 
         id = types.CanIdentifier(0)
         payload = bytearray(payload_list)
         frame = types.CanFrame(id, constants.FrameType.CAN_DATA, payload)
 
-        print("Writing CAN frames using {} alias:".format(database_name))
+        print(f"Writing CAN frames using {database_name} alias:")
 
-        i = 0
-        while i < 3:
+        for i in range(3):
             for index, byte in enumerate(payload):
                 payload[index] = byte + i
 
             frame.payload = payload
             output_session.frames.write([frame])
-            print('Sent frame with ID: {} payload: {}'.format(frame.identifier, list(frame.payload)))
-            i += 1
-
+            print(f'Sent frame with ID: {frame.identifier} payload: {list(frame.payload)}')
     with system.System() as my_system:
         del my_system.databases[database_name]
 

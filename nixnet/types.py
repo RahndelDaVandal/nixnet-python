@@ -224,9 +224,8 @@ class CanIdentifier(object):
             if identifier != (identifier & self._EXTENDED_FRAME_ID_MASK):
                 _errors.check_for_error(_cconsts.NX_ERR_UNDEFINED_FRAME_ID)
             identifier |= _cconsts.NX_FRAME_ID_CAN_IS_EXTENDED
-        else:
-            if identifier != (identifier & self._FRAME_ID_MASK):
-                _errors.check_for_error(_cconsts.NX_ERR_UNDEFINED_FRAME_ID)
+        elif identifier != (identifier & self._FRAME_ID_MASK):
+            _errors.check_for_error(_cconsts.NX_ERR_UNDEFINED_FRAME_ID)
         return identifier
 
     def __eq__(self, other):
@@ -240,10 +239,7 @@ class CanIdentifier(object):
 
     def __ne__(self, other):
         result = self.__eq__(other)
-        if result is NotImplemented:
-            return result
-        else:
-            return not result
+        return result if result is NotImplemented else not result
 
     def __repr__(self):
         """CanIdentifier debug representation.
@@ -271,7 +267,7 @@ class FrameFactory(object):
     __slots__ = ()
 
     @_py2.abstractclassmethod
-    def from_raw(cls, frame):  # NOQA: N805 can't detect abstractclassmethod
+    def from_raw(self, frame):    # NOQA: N805 can't detect abstractclassmethod
         # No type annotation because mypy doesn't understand
         # abstractclassmethod is the same as classmethod
         """Convert from RawFrame."""
@@ -302,10 +298,7 @@ class Frame(FrameFactory):
 
     def __ne__(self, other):
         result = self.__eq__(other)
-        if result is NotImplemented:
-            return result
-        else:
-            return not result
+        return result if result is NotImplemented else not result
 
     @abc.abstractmethod
     def __repr__(self):
@@ -380,11 +373,8 @@ class RawFrame(Frame):
         if self.info != 0:
             optional.append('info=0x{:x}'.format(self.info))
         if self.payload:
-            optional.append('len(payload)={}'.format(len(self.payload)))
-        if optional:
-            optional_params = ', {}'.format(", ".join(optional))
-        else:
-            optional_params = ''
+            optional.append(f'len(payload)={len(self.payload)}')
+        optional_params = f', {", ".join(optional)}' if optional else ''
         return "{}(timestamp=0x{:x}, identifier=0x{:x}, type={}{})".format(
             type(self).__name__,
             self.timestamp,
@@ -480,21 +470,15 @@ class CanFrame(Frame):
         """
         optional = []
         if self.echo:
-            optional.append('echo={}'.format(self.echo))
+            optional.append(f'echo={self.echo}')
         if self.type != constants.FrameType.CAN_DATA:
-            optional.append('type={}'.format(self.type))
+            optional.append(f'type={self.type}')
         if self.timestamp != 0:
             optional.append('timestamp=0x{:x}'.format(self.timestamp))
         if self.payload:
-            optional.append('len(payload)={}'.format(len(self.payload)))
-        if optional:
-            optional_params = ', {}'.format(", ".join(optional))
-        else:
-            optional_params = ''
-        return "{}({}{})".format(
-            type(self).__name__,
-            self.identifier,
-            optional_params)
+            optional.append(f'len(payload)={len(self.payload)}')
+        optional_params = f', {", ".join(optional)}' if optional else ''
+        return f"{type(self).__name__}({self.identifier}{optional_params})"
 
 
 class CanBusErrorFrame(Frame):
@@ -654,11 +638,7 @@ class LinFrame(object):
         lin_frame.timestamp = frame.timestamp
         lin_frame.echo = bool(frame.flags & _cconsts.NX_FRAME_FLAGS_TRANSMIT_ECHO)
         lin_frame.eventslot = bool(frame.flags & _cconsts.NX_FRAME_FLAGS_LIN_EVENT_SLOT)
-        if lin_frame.eventslot:
-            lin_frame.eventid = frame.info
-        else:
-            lin_frame.eventid = 0
-
+        lin_frame.eventid = frame.info if lin_frame.eventslot else 0
         return lin_frame
 
     def to_raw(self):
@@ -710,21 +690,18 @@ class LinFrame(object):
         """
         optional = []
         if self.echo:
-            optional.append('echo={}'.format(self.echo))
+            optional.append(f'echo={self.echo}')
         if self.type != constants.FrameType.LIN_DATA:
-            optional.append('type={}'.format(self.type))
+            optional.append(f'type={self.type}')
         if self.timestamp != 0:
             optional.append('timestamp=0x{:x}'.format(self.timestamp))
         if self.eventslot:
-            optional.append('eventslot={}'.format(self.eventslot))
+            optional.append(f'eventslot={self.eventslot}')
         if self.eventid != 0:
-            optional.append('eventid={}'.format(self.eventid))
+            optional.append(f'eventid={self.eventid}')
         if self.payload:
-            optional.append('len(payload)={}'.format(len(self.payload)))
-        if optional:
-            optional_params = ', {}'.format(", ".join(optional))
-        else:
-            optional_params = ''
+            optional.append(f'len(payload)={len(self.payload)}')
+        optional_params = f', {", ".join(optional)}' if optional else ''
         return "{}(identifier=0x{:x}{})".format(
             type(self).__name__,
             self.identifier,
@@ -892,7 +869,7 @@ class DelayFrame(Frame):
         >>> DelayFrame(250)
         DelayFrame(250)
         """
-        return "{}({})".format(type(self).__name__, self.offset)
+        return f"{type(self).__name__}({self.offset})"
 
 
 class LogTriggerFrame(Frame):
