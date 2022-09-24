@@ -20,22 +20,22 @@ def test_session_container():
     signals = ['CANEventSignal1', 'CANEventSignal2']
 
     with convert.SignalConversionSinglePointSession(
-            database_name,
-            cluster_name,
-            signals) as session:
-        with convert.SignalConversionSinglePointSession(
                 database_name,
                 cluster_name,
-                signals) as dup_session:
+                signals) as session:
+        with convert.SignalConversionSinglePointSession(
+                        database_name,
+                        cluster_name,
+                        signals) as dup_session:
             assert session == session
-            assert not (session == dup_session)
-            assert not (session == 1)
-
-            assert not (session != session)
             assert session != dup_session
             assert session != 1
 
-        set([session])  # Testing `__hash__`
+            assert session == session
+            assert session != dup_session
+            assert session != 1
+
+        {session}
 
         print(repr(session))
 

@@ -87,17 +87,14 @@ class SessionBase(object):
 
     def __ne__(self, other):
         result = self.__eq__(other)
-        if result is NotImplemented:
-            return result
-        else:
-            return not result
+        return result if result is NotImplemented else not result
 
     def __hash__(self):
         return hash(self._handle)
 
     def __repr__(self):
         # type: () -> typing.Text
-        return '{}(handle={})'.format(type(self).__name__, self._handle)
+        return f'{type(self).__name__}(handle={self._handle})'
 
     def close(self):
         # type: () -> None
@@ -383,8 +380,7 @@ class SessionBase(object):
             constants.ReadState.TIME_CURRENT,
             state_size,
             ctypes.pointer(state_value_ctypes))
-        time = state_value_ctypes.value
-        return time
+        return state_value_ctypes.value
 
     @property
     def time_start(self):

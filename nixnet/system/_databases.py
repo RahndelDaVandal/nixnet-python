@@ -21,7 +21,7 @@ class AliasCollection(Mapping):
         self._handle = handle
 
     def __repr__(self):
-        return '{}(handle={})'.format(type(self).__name__, self._handle)
+        return f'{type(self).__name__}(handle={self._handle})'
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
@@ -31,10 +31,7 @@ class AliasCollection(Mapping):
 
     def __ne__(self, other):
         result = self.__eq__(other)
-        if result is NotImplemented:
-            return result
-        else:
-            return not result
+        return result if result is NotImplemented else not result
 
     def __hash__(self):
         return hash(self._handle)
@@ -52,14 +49,12 @@ class AliasCollection(Mapping):
             Args:
                 index(str): The value of the index (alias name).
         """
-        if isinstance(index, six.string_types):
-            for alias, filepath in self._get_database_list(''):
-                if alias == index:
-                    return self._create_item(alias, filepath)
-            else:
-                raise KeyError('Alias alias %s not found in the system' % index)
-        else:
+        if not isinstance(index, six.string_types):
             raise TypeError(index)
+        for alias, filepath in self._get_database_list(''):
+            if alias == index:
+                return self._create_item(alias, filepath)
+        raise KeyError(f'Alias alias {index} not found in the system')
 
     def __delitem__(self, index):
         # type: (typing.Text) -> None
@@ -170,8 +165,7 @@ class Alias(object):
         self._database_filepath = database_filepath
 
     def __repr__(self):
-        return '{}(alias={}, filepath={})'.format(
-            type(self).__name__, self._database_alias, self._database_filepath)
+        return f'{type(self).__name__}(alias={self._database_alias}, filepath={self._database_filepath})'
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
@@ -182,10 +176,7 @@ class Alias(object):
 
     def __ne__(self, other):
         result = self.__eq__(other)
-        if result is NotImplemented:
-            return result
-        else:
-            return not result
+        return result if result is NotImplemented else not result
 
     def __hash__(self):
         return hash(self.alias)

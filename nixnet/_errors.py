@@ -30,5 +30,4 @@ def status_to_string(status_code):
     buffer_ctypes = ctypes.create_string_buffer(buffer_size)
     status_code_ctypes = _ctypedefs.nxStatus_t(status_code)
     _cfuncs.lib.nx_status_to_string(status_code_ctypes, buffer_size_ctypes, buffer_ctypes)
-    status_string = buffer_ctypes.value.decode("ascii")
-    return status_string
+    return buffer_ctypes.value.decode("ascii")

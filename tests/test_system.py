@@ -17,10 +17,10 @@ def test_system_container():
     with system.System() as sys_one:
         with system.System() as sys_two:
             assert sys_one == sys_one
-            assert not (sys_one == sys_two)
-            assert not (sys_one == 1)
+            assert sys_one != sys_two
+            assert sys_one != 1
 
-            assert not (sys_one != sys_one)
+            assert sys_one == sys_one
             assert sys_one != sys_two
             assert sys_one != 1
 
@@ -59,9 +59,9 @@ def test_system_collection_equality():
         print(hash(sys.dev_refs))
 
         assert sys.dev_refs == sys.dev_refs
-        assert not (sys.dev_refs != sys.dev_refs)
+        assert sys.dev_refs == sys.dev_refs
 
-        assert not (sys.dev_refs == "Hello")
+        assert sys.dev_refs != "Hello"
         assert sys.dev_refs != "Hello"
 
 
@@ -91,12 +91,12 @@ def test_device_container():
         dev = devs[0]
 
         assert dev == dev
-        assert not (dev == 100)
-
-        assert not (dev != dev)
         assert dev != 100
 
-        set([dev])  # Testing `__hash__`
+        assert dev == dev
+        assert dev != 100
+
+        {dev}
 
         print(repr(dev))
 
@@ -148,14 +148,14 @@ def test_intf_container(can_in_interface):
 
         assert in_intf == can_in_interface
         assert in_intf == in_intf
-        assert not (in_intf == 100)
+        assert in_intf != 100
 
-        assert not (in_intf != can_in_interface)
-        assert not (in_intf != in_intf)
+        assert in_intf == can_in_interface
+        assert in_intf == in_intf
         assert in_intf != "<Invalid>"
         assert in_intf != 100
 
-        set([in_intf])  # Testing `__hash__`
+        {in_intf}
 
         print(repr(in_intf))
 
@@ -266,18 +266,18 @@ def test_databases_equality(custom_database_path):
         print(hash(sys.databases))
 
         assert sys.databases == sys.databases
-        assert not (sys.databases != sys.databases)
+        assert sys.databases == sys.databases
 
-        assert not (sys.databases == "Hello")
+        assert sys.databases != "Hello"
         assert sys.databases != "Hello"
 
         for database in sys.databases.values():
             print(hash(database))
 
             assert database == database
-            assert not (database != database)
+            assert database == database
 
-            assert not (database == "Hello")
+            assert database != "Hello"
             assert database != "Hello"
 
 

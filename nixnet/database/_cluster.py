@@ -52,16 +52,13 @@ class Cluster(_database_object.DatabaseObject):
 
     def __ne__(self, other):
         result = self.__eq__(other)
-        if result is NotImplemented:
-            return result
-        else:
-            return not result
+        return result if result is NotImplemented else not result
 
     def __hash__(self):
         return hash(self._handle)
 
     def __repr__(self):
-        return '{}(handle={})'.format(type(self).__name__, self._handle)
+        return f'{type(self).__name__}(handle={self._handle})'
 
     def check_config_status(self):
         # type: () -> None
@@ -258,10 +255,7 @@ class Cluster(_database_object.DatabaseObject):
 
     @property
     def database_ref(self):
-        # type: () -> int
-        # todo: return a Database object here
-        handle = _props.get_cluster_database_ref(self._handle)
-        return handle
+        return _props.get_cluster_database_ref(self._handle)
 
     @property
     def dbc_attributes(self):

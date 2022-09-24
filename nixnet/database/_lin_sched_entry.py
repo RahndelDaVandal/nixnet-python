@@ -35,16 +35,13 @@ class LinSchedEntry(_database_object.DatabaseObject):
 
     def __ne__(self, other):
         result = self.__eq__(other)
-        if result is NotImplemented:
-            return result
-        else:
-            return not result
+        return result if result is NotImplemented else not result
 
     def __hash__(self):
         return hash(self._handle)
 
     def __repr__(self):
-        return '{}(handle={})'.format(type(self).__name__, self._handle)
+        return f'{type(self).__name__}(handle={self._handle})'
 
     @property
     def collision_res_sched(self):
@@ -173,8 +170,7 @@ class LinSchedEntry(_database_object.DatabaseObject):
         You cannot change it afterwards.
         """
         handle = _props.get_lin_sched_entry_sched(self._handle)
-        lin_sched = _lin_sched.LinSched(_handle=handle)
-        return lin_sched
+        return _lin_sched.LinSched(_handle=handle)
 
     @property
     def type(self):

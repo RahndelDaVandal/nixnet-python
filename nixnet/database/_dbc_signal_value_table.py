@@ -21,7 +21,7 @@ class DbcSignalValueTable(Mapping):
         self._handle = handle
 
     def __repr__(self):
-        return '{}(handle={})'.format(type(self).__name__, self._handle)
+        return f'{type(self).__name__}(handle={self._handle})'
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
@@ -31,10 +31,7 @@ class DbcSignalValueTable(Mapping):
 
     def __ne__(self, other):
         result = self.__eq__(other)
-        if result is NotImplemented:
-            return result
-        else:
-            return not result
+        return result if result is NotImplemented else not result
 
     def __hash__(self):
         return hash(self._handle)
@@ -95,11 +92,9 @@ class DbcSignalValueTable(Mapping):
 
         table_list = table_string.split(',')
         if len(table_list) % 2:
-            raise ValueError('Value tables require an even number of items: %s' % table_list)
+            raise ValueError(f'Value tables require an even number of items: {table_list}')
 
-        # table_string is of the format 'value1, key1, value2, key2, ...'
-        # convert to a dict: { 'key1': int('value1'), 'key2': int('value2'), ... }
-        table_dict = dict(
-            (key, int(value))
-            for value, key in zip(table_list[0::2], table_list[1::2]))
-        return table_dict
+        return {
+            key: int(value)
+            for value, key in zip(table_list[::2], table_list[1::2])
+        }

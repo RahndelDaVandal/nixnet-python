@@ -65,15 +65,15 @@ def main():
 
         # Using the database we just created, write and then read a pair of signals.
         with nixnet.SignalOutSinglePointSession(
-                output_interface,
-                database_name,
-                cluster_name,
-                signal_list) as output_session:
+                        output_interface,
+                        database_name,
+                        cluster_name,
+                        signal_list) as output_session:
             with nixnet.SignalInSinglePointSession(
-                    input_interface,
-                    database_name,
-                    cluster_name,
-                    signal_list) as input_session:
+                                input_interface,
+                                database_name,
+                                cluster_name,
+                                signal_list) as input_session:
                 terminated_cable = six.moves.input('Are you using a terminated cable (Y or N)? ')
                 if terminated_cable.lower() == "y":
                     input_session.intf.lin_term = constants.LinTerm.ON
@@ -82,7 +82,7 @@ def main():
                     input_session.intf.lin_term = constants.LinTerm.ON
                     output_session.intf.lin_term = constants.LinTerm.ON
                 else:
-                    print("Unrecognised input ({}), assuming 'n'".format(terminated_cable))
+                    print(f"Unrecognised input ({terminated_cable}), assuming 'n'")
                     input_session.intf.lin_term = constants.LinTerm.ON
                     output_session.intf.lin_term = constants.LinTerm.ON
 
@@ -96,7 +96,7 @@ def main():
                 # Generate a pair of random values and send out the signals.
                 output_values = [randint(0, 255), randint(0, 255)]
                 output_session.signals.write(output_values)
-                print('Sent signal values: {}'.format(output_values))
+                print(f'Sent signal values: {output_values}')
 
                 # Wait 1 s and then read the received values.
                 # They should be the same as the ones sent.
@@ -104,7 +104,7 @@ def main():
 
                 input_signals = input_session.signals.read()
                 input_values = [int(value) for timestamp, value in input_signals]
-                print('Received signal values: {}'.format(input_values))
+                print(f'Received signal values: {input_values}')
 
 
 if __name__ == '__main__':

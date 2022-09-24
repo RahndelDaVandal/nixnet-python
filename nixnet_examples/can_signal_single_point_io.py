@@ -17,8 +17,7 @@ def convert_timestamp(timestamp):
     system_epock_datetime = datetime.datetime(system_epoch.tm_year, system_epoch.tm_mon, system_epoch.tm_mday)
     xnet_epoch_datetime = datetime.datetime(1601, 1, 1)
     delta = system_epock_datetime - xnet_epoch_datetime
-    date = datetime.datetime.fromtimestamp(timestamp * 100e-9) - delta
-    return date
+    return datetime.datetime.fromtimestamp(timestamp * 100e-9) - delta
 
 
 def main():
@@ -30,15 +29,15 @@ def main():
     interface2 = 'CAN2'
 
     with nixnet.SignalInSinglePointSession(
-            interface1,
-            database_name,
-            cluster_name,
-            input_signals) as input_session:
-        with nixnet.SignalOutSinglePointSession(
-                interface2,
+                interface1,
                 database_name,
                 cluster_name,
-                output_signals) as output_session:
+                input_signals) as input_session:
+        with nixnet.SignalOutSinglePointSession(
+                        interface2,
+                        database_name,
+                        cluster_name,
+                        output_signals) as output_session:
             terminated_cable = six.moves.input('Are you using a terminated cable (Y or N)? ')
             if terminated_cable.lower() == "y":
                 input_session.intf.can_term = constants.CanTerm.ON
@@ -47,7 +46,7 @@ def main():
                 input_session.intf.can_term = constants.CanTerm.ON
                 output_session.intf.can_term = constants.CanTerm.ON
             else:
-                print("Unrecognised input ({}), assuming 'n'".format(terminated_cable))
+                print(f"Unrecognised input ({terminated_cable}), assuming 'n'")
                 input_session.intf.can_term = constants.CanTerm.ON
                 output_session.intf.can_term = constants.CanTerm.ON
 
@@ -55,16 +54,25 @@ def main():
             # signal value sent before the initial read will be received.
             input_session.start()
 
-            user_value = six.moves.input('Enter {} signal values [float, float]: '.format(len(input_signals)))
+            user_value = six.moves.input(
+                f'Enter {len(input_signals)} signal values [float, float]: '
+            )
+
             try:
                 value_buffer = [float(x.strip()) for x in user_value.split(",")]
             except ValueError:
                 value_buffer = [24.5343, 77.0129]
-                print('Unrecognized input ({}). Setting data buffer to {}'.format(user_value, value_buffer))
+                print(
+                    f'Unrecognized input ({user_value}). Setting data buffer to {value_buffer}'
+                )
+
 
             if len(value_buffer) != len(input_signals):
                 value_buffer = [24.5343, 77.0129]
-                print('Invalid number of signal values entered. Setting data buffer to {}'.format(value_buffer))
+                print(
+                    f'Invalid number of signal values entered. Setting data buffer to {value_buffer}'
+                )
+
 
             print('The same values should be received. Press q to quit')
             i = 0
@@ -72,7 +80,7 @@ def main():
                 for index, value in enumerate(value_buffer):
                     value_buffer[index] = value + i
                 output_session.signals.write(value_buffer)
-                print('Sent signal values: {}'.format(value_buffer))
+                print(f'Sent signal values: {value_buffer}')
 
                 # Wait 1 s and then read the received values.
                 # They should be the same as the ones sent.
@@ -81,7 +89,7 @@ def main():
                 signals = input_session.signals.read()
                 for timestamp, value in signals:
                     date = convert_timestamp(timestamp)
-                    print('Received signal with timestamp {} and value {}'.format(date, value))
+                    print(f'Received signal with timestamp {date} and value {value}')
 
                 i += 1
                 if max(value_buffer) + i > sys.float_info.max:

@@ -39,8 +39,8 @@ def test_database_frame_properties_common():
 
         # test references
         print(frame.cluster)
-        assert len(list(frame.sigs)) > 0
-        assert len(list(frame.pdu_properties)) > 0
+        assert list(frame.sigs)
+        assert list(frame.pdu_properties)
         assert len(frame.mux_static_signals) > 0
         assert len(frame.mux_subframes) == 0
         with pytest.raises(errors.XnetError):

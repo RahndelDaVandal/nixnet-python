@@ -87,7 +87,7 @@ class InFrames(Frames):
             A list of raw bytes representing the data.
         """
         buffer, number_of_bytes_returned = _funcs.nx_read_frame(self._handle, num_bytes, timeout)
-        return buffer[0:number_of_bytes_returned]
+        return buffer[:number_of_bytes_returned]
 
     def read(
             self,
@@ -147,7 +147,7 @@ class SinglePointInFrames(Frames):
             self._handle,
             num_bytes,
             constants.TIMEOUT_NONE)
-        return buffer[0:number_of_bytes_returned]
+        return buffer[:number_of_bytes_returned]
 
     def read(
             self,

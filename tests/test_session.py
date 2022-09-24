@@ -31,14 +31,14 @@ def test_session_container(can_in_interface, can_out_interface):
     with nixnet.FrameInStreamSession(can_in_interface) as input_session:
         with nixnet.FrameInStreamSession(can_out_interface) as output_session:
             assert input_session == input_session
-            assert not (input_session == output_session)
-            assert not (input_session == 1)
-
-            assert not (input_session != input_session)
             assert input_session != output_session
             assert input_session != 1
 
-        set([input_session])  # Testing `__hash__`
+            assert input_session == input_session
+            assert input_session != output_session
+            assert input_session != 1
+
+        {input_session}
 
         print(repr(input_session))
 
@@ -362,15 +362,15 @@ def test_wait_for_transmit_complete(can_in_interface, can_out_interface):
     frame_name = 'CANEventFrame1'
 
     with nixnet.FrameInQueuedSession(
-            can_in_interface,
-            database_name,
-            cluster_name,
-            frame_name) as input_session:
-        with nixnet.FrameOutQueuedSession(
-                can_out_interface,
+                can_in_interface,
                 database_name,
                 cluster_name,
-                frame_name) as output_session:
+                frame_name) as input_session:
+        with nixnet.FrameOutQueuedSession(
+                        can_out_interface,
+                        database_name,
+                        cluster_name,
+                        frame_name) as output_session:
             output_session.auto_start = False
             input_session.start()
 
@@ -395,8 +395,8 @@ def test_wait_for_transmit_complete(can_in_interface, can_out_interface):
             output_session.wait_for_transmit_complete(10)
             finished = time.time()
 
-            print("Write took {} s".format(written - initial))
-            print("Wait took {} s".format(finished - written))
+            print(f"Write took {written - initial} s")
+            print(f"Wait took {finished - written} s")
 
 
 @pytest.mark.integration

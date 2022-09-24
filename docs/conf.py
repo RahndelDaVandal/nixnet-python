@@ -52,7 +52,7 @@ master_doc = 'index'
 # General information about the project.
 project = u'nixnet'
 author = u'National Instruments'
-copyright = u'2017-{}, {}'.format(datetime.now().year, author)
+copyright = f'2017-{datetime.now().year}, {author}'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

@@ -38,6 +38,6 @@ def test_database_collection_container():
             print(db.clusters[test_cluster_name])
 
         # test container
-        assert len(list(collection_1.keys())) > 0
-        assert len(list(collection_1.values())) > 0
-        assert len(list(collection_1.items())) > 0
+        assert list(collection_1.keys())
+        assert list(collection_1.values())
+        assert list(collection_1.items())

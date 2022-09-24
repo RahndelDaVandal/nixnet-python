@@ -41,7 +41,7 @@ def test_database_cluster_properties_common():
         assert len(cluster.ecus) > 0
         assert len(cluster.frames) > 0
         assert len(cluster.pdus) > 0
-        assert len(list(cluster.sigs)) > 0
+        assert list(cluster.sigs)
 
         # test setters
         cluster.application_protocol = constants.AppProtocol.NONE
